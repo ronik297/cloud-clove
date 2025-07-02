@@ -1,0 +1,31 @@
+'use client'
+
+import { cn } from "@/lib/utils"
+import { Button } from "../ui/button"
+import { useSidebar } from "../ui/sidebar"
+import { RiSidebarFoldFill, RiSidebarUnfoldFill } from "@remixicon/react"
+
+function SidebarTrigger() {
+  const { toggleSidebar, state } = useSidebar()
+
+  return (
+    <Button
+      data-sidebar="trigger"
+      data-slot="sidebar-trigger"
+      variant="ghost"
+      size="icon"
+      className={cn("size-fit")}
+      onClick={(event) => {
+        toggleSidebar()
+      }}
+    >
+      {
+        state === "expanded" ? <RiSidebarFoldFill />
+        : <RiSidebarUnfoldFill />
+      }
+      <span className="sr-only">Toggle Sidebar</span>
+    </Button>
+  )
+}
+
+export default SidebarTrigger
