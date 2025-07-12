@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster as Sonner } from "@/components/ui/sonner";
+import QueryProvider from "@/context/query-provider";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -23,8 +24,10 @@ export default function RootLayout({
   return (
     <html lang="en">
      <body className={cn(`font-outfit antialiased`, outfit.variable)}>
+      <QueryProvider>
         {children}
         <Sonner />
+      </QueryProvider>
       </body>
     </html>
   );
