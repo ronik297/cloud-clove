@@ -5,8 +5,68 @@ import { Subscription } from "@/lib/database/schema/subscription.model";
 import { pinata } from "@/lib/pinata/config";
 import { getCategoryFromMimeType, parseError } from "@/lib/utils";
 import { Hono } from "hono";
+import { describe } from "node:test";
 
 const fileRoute = new Hono()
+
+fileRoute.get('/:page', async (c) => {
+    try {
+        await db();
+
+        const category = c.req.param('page');
+        const page = Number(c.req.query('page'));
+
+        const session = await getServerSession();
+        const FILE_SIZE = 9;
+
+        if(!session) {
+            return c.json({
+                message: "Unauthorized",
+                description: "You need to be logged in to upload files",
+            }, {
+                status: 401
+            })
+        }
+
+        const { user: { id: userId, email: userEmail } } = session;
+
+        // Handle shared files logic
+        const totalFiles = await File.countDocuments({
+            "userInfo.in": userId,
+            category
+        })
+
+        const files = await File.find({
+            "userInfo.id": userId,
+            category
+        }).skip((page - 1) * FILE_SIZE).limit(FILE_SIZE).sort({ createdAt: -1 }).lean();
+
+        return c.json({
+            message: "Successfull",
+            description: "Files fetched successfully",
+            data: {
+                files: files,
+                totalFiles,
+                currentPage: page,
+                totalPages: Math.ceil(totalFiles / FILE_SIZE),
+            }
+            }, {
+                status: 200
+            })
+
+    } catch (error) {
+        console.log('Error in fetching files', error);
+        const err = parseError(error);
+
+        return c.json({
+            message: "Error",
+            description: err,
+            data: null
+        }, {
+            status: 500
+        }) 
+    }
+})
 
 fileRoute.post('/upload', async (c) => {
     try {
