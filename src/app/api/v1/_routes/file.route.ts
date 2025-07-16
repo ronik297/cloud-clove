@@ -30,7 +30,65 @@ fileRoute.get('/:page', async (c) => {
 
         const { user: { id: userId, email: userEmail } } = session;
 
-        // Handle shared files logic
+        if(category === 'shared') {
+            const documentCount = await File.aggregate([
+                {
+                    $unwind: "$sharedWith"
+                },
+                { 
+                    $match: {
+                        "sharedWith.email": userEmail
+                    }
+                },
+                {
+                    $count: "totalDocuments"
+                }
+            ])
+
+            const totalFiles = documentCount.length > 0 ? documentCount[0].totalDocuments : 0;
+
+            const files = await File.aggregate([
+                {
+                    $unwind: "$sharedWith"
+                },
+                { 
+                    $match: {
+                        "sharedWith.email": userEmail
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$_id", // Group back the files by their original ID
+                        pinataId: { $first: "$pinataId" },
+                        name: { $first: "$name" },
+                        cid: { $first: "$cid" },
+                        size: { $first: "$size" },
+                        mimeType: { $first: "$mimeType" },
+                        userInfo: { $first: "$userInfo" },
+                        groupId: { $first: "$groupId" },
+                        sharedWith: { $push: "$sharedWith" }, // Reconstruct the sharedWith array
+                        category: { $first: "$category" },
+                        createdAt: { $first: "$createdAt" },
+                        updatedAt: { $first: "$updatedAt" },
+                    },
+                },
+            ])
+
+            return c.json(
+                {
+                    message: "Success",
+                    description: "",
+                    data: {
+                        files: files,
+                        total: totalFiles,
+                        currentPage: page,
+                        totalPages: Math.ceil(totalFiles / FILE_SIZE),
+                    },
+                },
+                { status: 200 }
+            );
+        }
+
         const totalFiles = await File.countDocuments({
             "userInfo.in": userId,
             category
