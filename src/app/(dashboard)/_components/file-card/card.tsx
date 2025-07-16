@@ -1,6 +1,6 @@
 import { IFile } from '@/lib/database/schema/file.model'
-import { cn, formatFileSize } from '@/lib/utils';
-import React from 'react'
+import { cn, dynamicDownload, formatFileSize } from '@/lib/utils';
+import React, { useState } from 'react'
 import {
   Card,
   CardContent,
@@ -10,11 +10,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import FileMenu from './menu';
 import { P } from '@/components/custom/p';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
+import { generateUrl } from '@/action/file.action';
 
 const FileCard = ({ file }: { file: IFile}) => {
+  const [isLinkInProgress, setIsLinkInProgress] = useState(false);
+
   const { name, size, createdAt, userInfo, category } = file;
 
-  const requiredName = `${name.slice(0, 16)}...${name.split('.')[1]}`;
+  const requiredName = name.length > 20 ? name.slice(0, 20) + '...' : name;
 
   const formattedSize = formatFileSize(size);
   
@@ -26,20 +30,36 @@ const FileCard = ({ file }: { file: IFile}) => {
             <AvatarImage src={`/${category}.png`} />
             <AvatarFallback>{name.slice(0,2)}</AvatarFallback>
           </Avatar>
-        </div>
-        <div className='flex flex-col items-end gap-4 justify-between w-full'>
-          <FileMenu />
-          
-          <P>
-            {formattedSize}
-          </P>
-        </div>
+       
+          <div className='flex flex-col items-end gap-4 justify-between w-full'>
+            <FileMenu file={file} isLinkInProgess={isLinkInProgress} setIsLinkInProgress={setIsLinkInProgress} />
+            <P>
+              {formattedSize}
+            </P>
+          </div>
+         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className='space-y-2'>
         <P size="large" weight="bold" className={cn(category === 'image' && 'cursor-pointer')}
-        onClick={() => {
+        onClick={async () => {
           if(category === 'image') {
-            console.log('image')
+            setIsLinkInProgress(true);
+
+            const { data, status } = await generateUrl(file.cid);
+
+            if(status !== 201) {
+              toast(`Error`, {
+                description: `${data}`
+              })
+
+              setIsLinkInProgress(false);
+              return;
+            }
+
+            setIsLinkInProgress(false);
+
+            dynamicDownload(data as string, file.name)
+
           }
         }}
         >

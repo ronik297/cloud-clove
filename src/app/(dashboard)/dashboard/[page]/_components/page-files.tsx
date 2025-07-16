@@ -2,7 +2,6 @@
 
 import FileCard from '@/app/(dashboard)/_components/file-card/card';
 import { P } from '@/components/custom/p';
-import { TEN_MINUTES, THIRTY_DAYS_MS } from '@/lib/constants';
 import { IFile } from '@/lib/database/schema/file.model';
 import { RiLoader3Fill } from '@remixicon/react';
 import { useQuery } from '@tanstack/react-query';
@@ -36,8 +35,6 @@ const PageFiles = ({ page }: PageFilesProps) => {
     const { data, isLoading, error } = useQuery({
         queryKey: ['files', page],
         queryFn: async () =>  await getFiles({ page, currentPage: 1 }),
-        gcTime: THIRTY_DAYS_MS,
-        staleTime: TEN_MINUTES,
         refetchOnMount: false,
         refetchOnReconnect: false,
         refetchOnWindowFocus: false,
