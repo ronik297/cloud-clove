@@ -97,9 +97,19 @@ const FileMenu = ({ file, isLinkInProgess, setIsLinkInProgress } : {file: IFile;
   const mutation = useMutation({
     mutationFn: deleteFile,
     onSuccess: data => {
-      queryClient.invalidateQueries({
-        queryKey: ['files', data.category]
-      })
+      queryClient.setQueryData(['files', data.category],
+        (oldData: { files: IFile[] }) => {
+          const deletedFileId = data.fileId;
+          const updatedFiles = oldData.files.filter(file => file._id !== deletedFileId);
+
+          const updatedData = {
+            ...oldData,
+            files: updatedFiles,
+          };
+
+          return updatedData;
+        }
+      )
 
       toast.success('File Deleted Successfully', {
         description: file.name

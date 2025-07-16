@@ -23,12 +23,12 @@ export async function deleteFile(file: IFile) {
     try {
         await db();
 
-        const { pinataId, category } = file;
+        const { pinataId, category, _id } = file;
 
         await pinata.files.public.delete([pinataId]);
         await File.deleteOne({ pinataId });
 
-        return { status: 200, category };
+        return { status: 200, category, fileId: _id };
     } catch (error) {
         console.error("Error in deleting file:", error);
         const err = parseError(error);
