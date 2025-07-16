@@ -5,9 +5,65 @@ import { Subscription } from "@/lib/database/schema/subscription.model";
 import { pinata } from "@/lib/pinata/config";
 import { getCategoryFromMimeType, parseError } from "@/lib/utils";
 import { Hono } from "hono";
-import { describe } from "node:test";
 
 const fileRoute = new Hono()
+
+fileRoute.get('/', async (c) => {
+    try {
+        await db();
+        const session = await getServerSession();
+        const search = c.req.query('search');
+
+        if(!session) {
+            return c.json({
+                message: "Unauthorized",
+                description: "You need to be logged in to upload files",
+            }, {
+                status: 401 
+            })
+        }
+
+        if(!search || search.trim() === '') {
+            return c.json({
+                message: "Bad Request",
+                description: "Search term cannot be empty",
+            }, {
+                status: 400
+            })
+        }
+
+        const { user: { id } } = session;
+
+        const files = await File.find({
+                "userInfo.id": id,
+                name:  {
+                    $regex: search,
+                    $options: 'i'
+                }
+            }).lean();
+
+        return c.json({
+            message: "Success",
+            description: "Files fetched successfully",
+            data: files,
+        }, {
+            status: 200
+        });
+
+    } catch (error) {
+        console.log('Error in searching files', error);
+        const err = parseError(error);
+        
+        return c.json({
+            message: "Error",
+            description: err,
+            data: null
+        }, {
+            status: 500
+        })
+    }
+
+})
 
 fileRoute.get('/:page', async (c) => {
     try {

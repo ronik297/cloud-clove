@@ -13,10 +13,7 @@ interface PageFilesProps {
     page: string;
 }
 
-
-
 async function getFiles({page, currentPage}: { page: string, currentPage: number }) {
-
     if(page === 'subscription') {
         return {files: []};
     }

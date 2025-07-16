@@ -6,15 +6,17 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 import { RiFilePdf2Fill, RiImageFill, RiPieChart2Fill, RiStarFill, RiUserShared2Fill, RiVideoFill } from "@remixicon/react";
 import { P, paragraphVariants } from "@/components/custom/p";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import SearchBar from "./search-bar";
 
 // Menu items.
 const items = [
@@ -58,6 +60,14 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-none"> 
       <SidebarContent>
         {/* SIDEBAR HEADER */}
+         <SidebarHeader>
+          <SidebarMenu className="space-y-4 mt-3">
+            <SidebarMenuItem>
+              <SearchBar />
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarHeader>
+
         <SidebarGroup>
           <SidebarGroupLabel>Files</SidebarGroupLabel>
           <SidebarGroupContent className="space-y-2">
