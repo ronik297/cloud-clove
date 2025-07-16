@@ -119,7 +119,7 @@ const SearchDialog = ({
 
     return (
         <Dialog open={isSearchDialogOpen} onOpenChange={setIsSearchDialogOpen}>
-            <DialogContent>
+            <DialogContent className='max-h-[90vh] overflow-y-scroll'>
                 <DialogHeader className='hidden
                 '>
                     <DialogTitle>title</DialogTitle>

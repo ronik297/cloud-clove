@@ -146,7 +146,7 @@ fileRoute.get('/:page', async (c) => {
         }
 
         const totalFiles = await File.countDocuments({
-            "userInfo.in": userId,
+            "userInfo.id": userId,
             category
         })
 

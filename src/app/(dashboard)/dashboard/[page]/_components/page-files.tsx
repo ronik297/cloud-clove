@@ -4,10 +4,12 @@ import FileCard from '@/app/(dashboard)/_components/file-card/card';
 import { P } from '@/components/custom/p';
 import { IFile } from '@/lib/database/schema/file.model';
 import { RiLoader3Fill } from '@remixicon/react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import Image from 'next/image';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useInView } from 'react-intersection-observer';
+import { toast } from 'sonner';
 
 interface PageFilesProps {
     page: string;
@@ -29,13 +31,67 @@ async function getFiles({page, currentPage}: { page: string, currentPage: number
 
 
 const PageFiles = ({ page }: PageFilesProps) => {
+    const { ref, inView } = useInView();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [isPageFull, setIsPageFull] = useState(false);
+    const queryClient = useQueryClient();
+
     const { data, isLoading, error } = useQuery({
         queryKey: ['files', page],
-        queryFn: async () =>  await getFiles({ page, currentPage: 1 }),
+        queryFn: async () =>  await getFiles({ page, currentPage }),
         refetchOnMount: false,
         refetchOnReconnect: false,
         refetchOnWindowFocus: false,
     });
+
+    const mutation = useMutation({
+        mutationFn: getFiles,
+        onSuccess: (newData) => {
+            if(currentPage === newData.totalPages) {
+                setIsPageFull(true);
+            }
+
+            queryClient.setQueryData(['files', page], (oldData: any) => {
+                const oldFiles = oldData?.files as IFile[] || [];
+                const newFiles = newData.files as IFile[] || [];
+
+                const mergedFiles = [
+                    ...oldFiles,
+                    ...newFiles.filter(
+                        (newFile) =>
+                        !oldFiles.some((oldFile) => oldFile._id === newFile._id)
+                    ),
+                ];
+
+                return {
+                    files: mergedFiles,
+                    total: newData.totalFiles,
+                    currentPage: newData.currentPage,
+                    totalPages: newData.totalPages,
+                };
+            });
+        },
+        onError: (e) => {
+            toast.error("Error", {
+                description: e.message
+            })
+        }
+    })
+
+    useEffect(() => {
+        if(currentPage === data?.totalPages) {
+            setIsPageFull(true);
+            return;
+        }
+
+        if(inView && !isPageFull) {
+            setCurrentPage((prev) => {
+                const nextPage = prev + 1;
+                mutation.mutateAsync({ page, currentPage: nextPage });
+                return nextPage;
+            })
+        }
+    }, [inView, data])
 
     if(page === 'subscription') {
         return <>
@@ -64,6 +120,17 @@ const PageFiles = ({ page }: PageFilesProps) => {
                 <FileCard file={file} key={file._id} />
             ))}
        </div>
+       {
+        !isLoading && !isPageFull && (
+            <div ref={ref} className='w-full flex h-fit items-center justify-center'>
+                <div className='py-3'>
+                    {
+                        inView && <RiLoader3Fill className='animate-spin' />
+                    }
+                </div>
+            </div>
+        )
+       }
     </>
   )
 }
