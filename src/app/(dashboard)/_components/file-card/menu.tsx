@@ -101,7 +101,6 @@ const FileMenu = ({ file, isLinkInProgess, setIsLinkInProgress } : {file: IFile;
         (oldData: { files: IFile[] }) => {
           const deletedFileId = data.fileId;
           const updatedFiles = oldData.files.filter(file => file._id !== deletedFileId);
-
           const updatedData = {
             ...oldData,
             files: updatedFiles,

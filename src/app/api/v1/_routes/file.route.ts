@@ -195,6 +195,7 @@ fileRoute.post('/upload', async (c) => {
             return c.json({
                 message: "Unauthorized",
                 description: "You need to be logged in to upload files",
+                files: null
             }, {
                 status: 401
             })
@@ -211,6 +212,7 @@ fileRoute.post('/upload', async (c) => {
                 message: "⚠️ Warning",
                 category: null,
                 description: "Subscription not found.",
+                files: null
             }, {
                 status: 401
             })
@@ -221,6 +223,7 @@ fileRoute.post('/upload', async (c) => {
                 message: "⚠️ Warning",
                 category: null,
                 description: "Your subscription is expired. Please re-subscribe to continue." as string,
+                files: null
             }, {
                 status: 400
             })
@@ -231,6 +234,7 @@ fileRoute.post('/upload', async (c) => {
                 message: "⚠️ Warning",
                 category: null,
                 description: "Storage limit exceeded. Please subscribe and select additional storage." as string,
+                files: null
             }, {
                 status: 400
             })
@@ -243,7 +247,7 @@ fileRoute.post('/upload', async (c) => {
 
         const category = getCategoryFromMimeType(uploadData.mime_type)  
 
-        await File.create({
+        const uploadedFile = await File.create({
             pinataId: uploadData.id,
             name: uploadData.name,
             mimeType: uploadData.mime_type,
@@ -269,6 +273,7 @@ fileRoute.post('/upload', async (c) => {
             message: "Upload Successful",
             category,
             description: `File: ${uploadData.name}`,
+            files: uploadedFile
         },
         {
             status: 201
@@ -281,7 +286,8 @@ fileRoute.post('/upload', async (c) => {
 
         return c.json({
             message: "Error",
-            description: err
+            description: err,
+            files: null
         }, 
         {
             status: 500    

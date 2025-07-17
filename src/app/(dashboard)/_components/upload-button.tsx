@@ -12,6 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { P } from '@/components/custom/p'
+import { IFile } from '@/lib/database/schema/file.model'
 
 const UploadButton = () => {
     const pathname = usePathname();
@@ -44,13 +45,23 @@ const UploadButton = () => {
 
     const mutation = useMutation({
         mutationFn: uploadFile,
-        onSuccess: (data) => {
-            queryClient.invalidateQueries({ 
-                queryKey: ['files', data.category],
+        onSuccess: (newData) => {
+            queryClient.setQueryData(['files', newData.category], (oldData: {files: IFile[]}) => {
+
+                const uploadedFile = newData.files as IFile;
+                const oldFiles = oldData?.files as IFile[] || [];
+               
+                const newMergedFiles = [uploadedFile, ...oldFiles];
+                const uploadedData = {
+                    ...oldData,
+                    files: newMergedFiles
+                }
+
+                return uploadedData;
             })
 
-            toast(data?.message, {
-                description: data?.description,
+            toast(newData?.message, {
+                description: newData?.description,
             })
         },
         onError: (error) => {
