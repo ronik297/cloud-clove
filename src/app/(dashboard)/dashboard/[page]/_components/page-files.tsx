@@ -29,7 +29,6 @@ async function getFiles({page, currentPage}: { page: string, currentPage: number
     return res.status === 200 ? res.data.data : { files: [] };
 }
 
-
 const PageFiles = ({ page }: PageFilesProps) => {
     const { ref, inView } = useInView();
     const [currentPage, setCurrentPage] = useState(1);
@@ -93,12 +92,6 @@ const PageFiles = ({ page }: PageFilesProps) => {
         }
     }, [inView, data])
 
-    if(page === 'subscription') {
-        return <>
-            Subscription
-        </>
-    }
-
     if(isLoading) {
         return <RiLoader3Fill className='animate-spin mx-auto' />
     }
@@ -109,7 +102,7 @@ const PageFiles = ({ page }: PageFilesProps) => {
 
     const files = data?.files as IFile[]
 
-    if(files?.length === 0 && page !== 'subscription') {
+    if(files?.length === 0) {
         return <Image src="/not-found.png" width={400} height={400} className='m-auto' alt="not-found" />
     }
 

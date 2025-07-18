@@ -1,11 +1,11 @@
 import { generatePageKey } from '@/lib/utils';
 import React from 'react'
 import PageFiles from './_components/page-files';
+import SubscriptionPage from './_components/page-subscription';
 
 interface Props {
     params: Promise<{page: "subscription" | "documents" |"images" | "videos" | "others" | "shared"}>;
 }
-
 
 const Page = async ({ params }: Props) => {
     const page = (await params).page;
@@ -17,7 +17,8 @@ const Page = async ({ params }: Props) => {
         {page}
       </h1>
       <br />
-      <PageFiles page={key} />
+      {page === "subscription" ? <SubscriptionPage /> :
+      <PageFiles page={key} />}
     </>
   )
 }
