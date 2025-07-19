@@ -93,7 +93,9 @@ const PageFiles = ({ page }: PageFilesProps) => {
     }, [inView, data])
 
     if(isLoading) {
-        return <RiLoader3Fill className='animate-spin mx-auto' />
+        return <div className='w-full min-h-[calc(100vh-196px)] flex items-center justify-center'>
+                    <RiLoader3Fill size={32} className='animate-spin mx-auto' />
+                </div>
     }
 
     if(error) {
@@ -103,7 +105,9 @@ const PageFiles = ({ page }: PageFilesProps) => {
     const files = data?.files as IFile[]
 
     if(files?.length === 0) {
-        return <Image src="/not-found.png" width={400} height={400} className='m-auto' alt="not-found" />
+        return  <div className='w-full min-h-[calc(100vh-196px)] flex items-center justify-center'>
+                    <Image src="/not-found.png" width={400} height={400} className='m-auto' alt="not-found" />
+                </div>
     }
 
   return (

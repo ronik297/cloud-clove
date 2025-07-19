@@ -5,7 +5,7 @@ import { Children } from "@/props/types";
 const Layout = ({ children } : Children) => {
   return (
     <main className="flex items-center justify-center w-full h-screen">
-        <div className="flex-1 w-full h-full bg-primary md:flex items-center justify-center p-6">
+        <div className="flex-1 w-full h-full bg-primary md:flex items-center justify-center p-6 hidden sm:flex">
             <div>
                 <h1 className={cn("text-white tracking-wider")}>
                     Cloud Clove
