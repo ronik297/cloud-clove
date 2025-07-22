@@ -18,7 +18,7 @@ export default function Footer() {
           >
             <div className="flex items-center space-x-2">
               <Cloud className="h-8 w-8 text-rose-500" />
-              <span className="text-xl font-bold">CloudDrive</span>
+              <span className="text-xl font-bold">CloudClove</span>
             </div>
             <p className="text-gray-400 max-w-xs">
               Your secure cloud storage solution. Store, sync, and share files with ease.
@@ -76,7 +76,7 @@ export default function Footer() {
             <ul className="space-y-4 text-gray-400">
               <li className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-rose-500" />
-                <span>support@clouddrive.com</span>
+                <span>support@Cloudclove.com</span>
               </li>
               <li className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-rose-500" />
@@ -98,7 +98,7 @@ export default function Footer() {
           className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center"
         >
           <p className="text-gray-400 text-sm">
-            © 2025 CloudDrive. All rights reserved.
+            © 2025 CloudClove. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a href="#" className="text-gray-400 hover:text-rose-500 text-sm transition-colors">

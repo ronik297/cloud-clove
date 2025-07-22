@@ -20,7 +20,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-2">
             <Cloud className="h-8 w-8 text-rose-500" />
-            <span className="text-xl font-bold text-gradient">CloudDrive</span>
+            <span className="text-xl font-bold text-gradient">CloudClove</span>
           </div>
 
           {/* Desktop Navigation */}
